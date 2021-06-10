@@ -150,9 +150,8 @@ test('script tags for JSON-LD are not stripped', async (t: ExecutionContext) => 
 });
 
 test('server status code should be forwarded', async (t: ExecutionContext) => {
-  const res = await server.get('/render/http://httpstat.us/404');
+  const res = await server.get(`/render/${testBase}404`);
   t.is(res.status, 404);
-  t.true(res.text.indexOf('404 Not Found') !== -1);
 });
 
 test('http status code should be able to be set via a meta tag', async (t: ExecutionContext) => {
@@ -247,14 +246,18 @@ test('whitelist ensures other urls do not get rendered', async (t: ExecutionCont
     timeout: 10000,
     port: '3000',
     host: '0.0.0.0',
-    width: 1000,
-    height: 1000,
+    width: 1280,
+    widthMobile: 768,
+    height: 1280,
+    heightMobile: 768,
+    setUserAgentMobile: false,
     reqHeaders: {},
     headers: {},
     puppeteerArgs: ['--no-sandbox'],
     renderOnly: [testBase],
     closeBrowser: false,
     restrictedUrlPattern: null,
+    stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
   };
   const server = request(await new Rendertron().initialize(mockConfig));
 
@@ -280,27 +283,31 @@ test('endpont for invalidating memory cache works if configured', async (t: Exec
     timeout: 10000,
     port: '3000',
     host: '0.0.0.0',
-    width: 1000,
-    height: 1000,
+    width: 1280,
+    widthMobile: 768,
+    height: 1280,
+    heightMobile: 768,
+    setUserAgentMobile: false,
     reqHeaders: {},
     headers: {},
     puppeteerArgs: ['--no-sandbox'],
     renderOnly: [],
     closeBrowser: false,
     restrictedUrlPattern: null,
+    stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
   };
   const cached_server = request(await new Rendertron().initialize(mockConfig));
-  const test_url = `/render/${testBase}basic-script.html`;
+  const test_url = `${testBase}basic-script.html`;
   await app.listen(1235);
   // Make a request which is not in cache
-  let res = await cached_server.get(test_url);
+  let res = await cached_server.get(`/render/${test_url}`);
   t.is(res.status, 200);
   t.true(res.text.indexOf('document-title') !== -1);
   t.is(res.header['x-renderer'], 'rendertron');
   t.true(res.header['x-rendertron-cached'] == null);
 
   // Ensure that it is cached
-  res = await cached_server.get(test_url);
+  res = await cached_server.get(`/render/${test_url}`);
   t.is(res.status, 200);
   t.true(res.text.indexOf('document-title') !== -1);
   t.is(res.header['x-renderer'], 'rendertron');
@@ -308,7 +315,7 @@ test('endpont for invalidating memory cache works if configured', async (t: Exec
 
   // Invalidate cache and ensure it is not cached
   res = await cached_server.get(`/invalidate/${test_url}`);
-  res = await cached_server.get(test_url);
+  res = await cached_server.get(`/render/${test_url}`);
   t.is(res.status, 200);
   t.true(res.text.indexOf('document-title') !== -1);
   t.is(res.header['x-renderer'], 'rendertron');
@@ -326,14 +333,18 @@ test('endpont for invalidating filesystem cache works if configured', async (t: 
     timeout: 10000,
     port: '3000',
     host: '0.0.0.0',
-    width: 1000,
-    height: 1000,
+    width: 1280,
+    widthMobile: 768,
+    height: 1280,
+    heightMobile: 768,
+    setUserAgentMobile: false,
     reqHeaders: {},
     headers: {},
     puppeteerArgs: ['--no-sandbox'],
     renderOnly: [],
     closeBrowser: false,
     restrictedUrlPattern: null,
+    stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
   };
   const cached_server = request(await new Rendertron().initialize(mock_config));
   const test_url = `/render/${testBase}basic-script.html`;
@@ -375,8 +386,11 @@ test('http header should be set via config', async (t: ExecutionContext) => {
     timeout: 10000,
     port: '3000',
     host: '0.0.0.0',
-    width: 1000,
-    height: 1000,
+    width: 1280,
+    widthMobile: 768,
+    height: 1280,
+    heightMobile: 768,
+    setUserAgentMobile: false,
     reqHeaders: {
       Referer: 'http://example.com/',
     },
@@ -385,6 +399,7 @@ test('http header should be set via config', async (t: ExecutionContext) => {
     renderOnly: [],
     closeBrowser: false,
     restrictedUrlPattern: null,
+    stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
   };
   server = request(await rendertron.initialize(mock_config));
   await app.listen(1237);
@@ -405,8 +420,11 @@ test.serial(
       timeout: 10000,
       port: '3000',
       host: '0.0.0.0',
-      width: 1000,
-      height: 1000,
+      width: 1280,
+      widthMobile: 768,
+      height: 1280,
+      heightMobile: 768,
+      setUserAgentMobile: false,
       reqHeaders: {
         Referer: 'http://example.com/',
       },
@@ -415,6 +433,7 @@ test.serial(
       renderOnly: [],
       closeBrowser: false,
       restrictedUrlPattern: null,
+      stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
     };
     const cached_server = request(
       await new Rendertron().initialize(mock_config)
@@ -458,8 +477,11 @@ test.serial(
       timeout: 10000,
       port: '3000',
       host: '0.0.0.0',
-      width: 1000,
-      height: 1000,
+      width: 1280,
+      widthMobile: 768,
+      height: 1280,
+      heightMobile: 768,
+      setUserAgentMobile: false,
       headers: {},
       reqHeaders: {
         Referer: 'http://example.com/',
@@ -468,6 +490,7 @@ test.serial(
       renderOnly: [],
       closeBrowser: false,
       restrictedUrlPattern: null,
+      stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
     };
     const cached_server = request(
       await new Rendertron().initialize(mock_config)
@@ -537,8 +560,11 @@ test('urls mathing pattern are restricted', async (t) => {
     timeout: 10000,
     port: '3000',
     host: '0.0.0.0',
-    width: 1000,
-    height: 1000,
+    width: 1280,
+    widthMobile: 768,
+    height: 1280,
+    heightMobile: 768,
+    setUserAgentMobile: false,
     headers: {},
     reqHeaders: {
       Referer: 'http://example.com/',
@@ -547,6 +573,7 @@ test('urls mathing pattern are restricted', async (t) => {
     renderOnly: [],
     closeBrowser: false,
     restrictedUrlPattern: '.*(\\.test.html)($|\\?)',
+    stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
   };
   const cached_server = request(
     await new Rendertron().initialize(mock_config)
