@@ -103,9 +103,9 @@ export class Renderer {
       isMobile,
     });
 
-    if (isMobile && this.config.setUserAgentMobile) {
-      page.setUserAgent(MOBILE_USERAGENT);
-    }
+    // if (isMobile && this.config.setUserAgentMobile) {
+    //   page.setUserAgent(MOBILE_USERAGENT);
+    // }
 
     if (timezoneId) {
       try {
