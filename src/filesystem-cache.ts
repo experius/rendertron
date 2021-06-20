@@ -254,7 +254,7 @@ export class FilesystemCache {
               typeof payload === 'object' &&
               payload.type === 'Buffer'
             ) {
-              ctx.body = Buffer.from(payload as any);
+              ctx.body = Buffer.from(payload);
             } else {
               ctx.body = payload;
             }
