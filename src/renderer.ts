@@ -154,6 +154,9 @@ export class Renderer {
         timeout: this.config.timeout,
         waitUntil: 'networkidle0',
       });
+      if (response === null) {
+        response = await page.waitForResponse(() => true)
+      }
     } catch (e) {
       console.error(e);
     }
