@@ -1,0 +1,38 @@
+diff --git a/node_modules/puppeteer/lib/cjs/puppeteer/common/NetworkManager.js b/node_modules/puppeteer/lib/cjs/puppeteer/common/NetworkManager.js
+index ceadd43..f4dac95
+--- a/node_modules/puppeteer/lib/cjs/puppeteer/common/NetworkManager.js
++++ b/node_modules/puppeteer/lib/cjs/puppeteer/common/NetworkManager.js
+@@ -225,6 +225,14 @@ class NetworkManager extends EventEmitter_js_1.EventEmitter {
+         this.emit(exports.NetworkManagerEmittedEvents.RequestFinished, request);
+     }
+     _onResponseReceived(event) {
++        // Fixes issue where request is intercepted(no onRequest is sent),
++        // but also no Fetch.requestPaused is sent for it, thus never sending  onRequest
++        if(!this._requestIdToRequest.has(event.requestId) && this._requestIdToRequestWillBeSentEvent.has(event.requestId)) {
++            const requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(event.requestId);
++            this._onRequest(requestWillBeSentEvent, event.requestId);
++            this._requestIdToRequestWillBeSentEvent.delete(event.requestId);
++        }
++
+         const request = this._requestIdToRequest.get(event.requestId);
+         // FileUpload sends a response without a matching request.
+         if (!request)
+diff --git a/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js b/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js
+index 0248b9d..8d36663
+--- a/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js
++++ b/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js
+@@ -222,6 +222,14 @@ export class NetworkManager extends EventEmitter {
+         this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+     }
+     _onResponseReceived(event) {
++        // Fixes issue where request is intercepted(no onRequest is sent),
++        // but also no Fetch.requestPaused is sent for it, thus never sending  onRequest
++        if(!this._requestIdToRequest.has(event.requestId) && this._requestIdToRequestWillBeSentEvent.has(event.requestId)) {
++            const requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(event.requestId);
++            this._onRequest(requestWillBeSentEvent, event.requestId);
++            this._requestIdToRequestWillBeSentEvent.delete(event.requestId);
++        }
++
+         const request = this._requestIdToRequest.get(event.requestId);
+         // FileUpload sends a response without a matching request.
+         if (!request)

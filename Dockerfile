@@ -43,6 +43,6 @@ RUN npm install || \
   cat npm-debug.log; \
   fi) && false)
 
-RUN npm run build
+RUN npm run postinstall && npm run build
 ENTRYPOINT [ "npm" ]
 CMD ["run", "start"]
