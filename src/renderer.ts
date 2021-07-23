@@ -152,8 +152,15 @@ export class Renderer {
       // Navigate to page. Wait until there are no oustanding network requests.
       response = await page.goto(requestUrl, {
         timeout: this.config.timeout,
-        waitUntil: 'networkidle0',
+        waitUntil: 'domcontentloaded',
       });
+      await page.waitForSelector('#toast-root');
+      await page.waitForSelector('main > *:nth-child(4) ');
+      await page.waitForSelector('[class*="-loadingIndicator__"]', { hidden: true});
+      await page.waitForSelector('[class*="_pending-"]', { hidden: true});
+      if (await page.$('[class*="-breadcrumbs-"]') !== null) {
+        await page.waitForSelector('[class*="-breadcrumbs-breadcrumbs__link-"]');
+      }
     } catch (e) {
       console.error(e);
     }

@@ -227,7 +227,7 @@ root. Available configuration options:
 
 An example config file specifying a memory cache, with a 2 hour expiration, and a maximum of 50 entries
 
-```javascript
+```json
 {
     "cache": "memory",
     "cacheConfig": {
@@ -243,3 +243,48 @@ If you're having troubles with getting Headless Chrome to run in your
 environment, refer to the
 [troubleshooting guide](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md)
 for Puppeteer.
+
+
+### Advanced SeoSnap Config
+```json
+{
+  "restrictedUrlPattern": "((.*(\\.png|\\.jpg|\\.jpeg|\\.gif|\\.webp|\\.mp4)($|\\?))|googleapis\\.com|gstatic\\.com|bat\\.bing\\.com|klarnacdn\\.net|www\\.google\\.com|datatricks\\.com|googletagmanager\\.com)",
+  "closeBrowser": false,
+  "cache": "filesystem",
+  "timeout": 60000,
+  "cacheConfig": {
+    "cacheDurationMinutes": 10080,
+    "cacheMaxEntries": -1,
+    "snapshotDir": "/app/cache"
+  },
+  "width": 1280,
+  "height": 1200,
+  "widthMobile": 375,
+  "widthMobile": 375,
+  "puppeteerArgs": [
+    "--user-data-dir=/app/cache/myUserDataDir",
+    "--autoplay-policy=user-gesture-required",
+    "--disable-background-networking",
+    "--disable-breakpad",
+    "--disable-component-update",
+    "--disable-default-apps",
+    "--disable-domain-reliability",
+    "--disable-notifications",
+    "--disable-offer-store-unmasked-wallet-cards",
+    "--disable-prompt-on-repost",
+    "--disable-renderer-backgrounding",
+    "--metrics-recording-only",
+    "--mute-audio",
+    "--no-default-browser-check",
+    "--no-first-run",
+    "--no-pings",
+    "--no-sandbox",
+    "--no-zygote",
+    "--password-store=basic",
+    "--use-gl=swiftshader",
+    "--use-mock-keychain",
+    "--disable-dev-shm-usage"
+  ]
+}
+
+```
