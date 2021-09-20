@@ -251,7 +251,7 @@ for Puppeteer.
   "restrictedUrlPattern": "((.*(\\.png|\\.jpg|\\.jpeg|\\.gif|\\.webp|\\.mp4)($|\\?))|googleapis\\.com|gstatic\\.com|bat\\.bing\\.com|klarnacdn\\.net|www\\.google\\.com|datatricks\\.com|googletagmanager\\.com)",
   "closeBrowser": false,
   "cache": "filesystem",
-  "timeout": 60000,
+  "timeout": 300000,
   "cacheConfig": {
     "cacheDurationMinutes": 10080,
     "cacheMaxEntries": -1,
@@ -287,4 +287,11 @@ for Puppeteer.
   ]
 }
 
+```
+
+### Additional cronjob to cleanup old crawled pages
+
+```
+## Cleanup old cache files
+0 5 * * * find /mnt/volume_ams3_01/cache/ -maxdepth 1 -type f -mmin +10080 -delete
 ```
