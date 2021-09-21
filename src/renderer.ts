@@ -151,9 +151,12 @@ export class Renderer {
     try {
       // Navigate to page. Wait until there are no oustanding network requests.
       response = await page.goto(requestUrl, {
-        timeout: this.config.timeout,
+        // default minimum timeout should be 300000 because we have a timeout of 60000 for 5 selectors
+        timeout: this.config.timeout > 300000 ? this.config.timeout : 300000,
         waitUntil: 'domcontentloaded',
       });
+      // change default timeout from 30000 to 60000
+      await page.setDefaultTimeout(60000);
       await page.waitForSelector('#toast-root');
       await page.waitForSelector('main > *:nth-child(4) ');
       await page.waitForSelector('[class*="-loadingIndicator__"]', { hidden: true});
