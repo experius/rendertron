@@ -133,7 +133,13 @@ export class Renderer {
       if (this.restrictRequest(interceptedRequest.url())) {
         interceptedRequest.abort();
       } else {
-        interceptedRequest.continue();
+        // graphql post requests are not allowed - only the urlResolver is allowed
+        // this will make sure requests like the createCart mutation are blocked
+        if (interceptedRequest.method() === 'POST' && interceptedRequest.url() && !interceptedRequest.postData()?.match(new RegExp('urlResolver'))) {
+          interceptedRequest.abort();
+        } else {
+          interceptedRequest.continue();
+        }
       }
     });
 
@@ -158,12 +164,30 @@ export class Renderer {
       // change default timeout from 30000 to 60000
       await page.setDefaultTimeout(60000);
       await page.waitForSelector('#toast-root');
-      await page.waitForSelector('main > *:nth-child(4) ');
       await page.waitForSelector('[class*="-loadingIndicator__"]', { hidden: true});
       await page.waitForSelector('[class*="_pending-"]', { hidden: true});
+      await page.waitForFunction(() =>
+        document.querySelectorAll(`
+            main > [class*="-bannerImage-"],
+            main > [class*="main-page-"],
+            main > [class*="-RootComponents-"],
+            [class*="-breadcrumbs-"],
+            main > [class*="-errorView-"],
+            main > [class*="-layoutContainer-"],
+            main > [class*="-ProductFullDetail-"],
+            main > div > [class*="-components-base-grid-"],
+            main > div > [class*="-contentBlocks-"],
+            main > div > [class*="-summaryFinder-"],
+            main > h1
+        `).length
+      );
       if (await page.$('[class*="-breadcrumbs-"]') !== null) {
         await page.waitForSelector('[class*="-breadcrumbs-breadcrumbs__link-"]');
       }
+      if (await page.$('main > [class*="-errorView-"]') !== null) {
+        throw new Error('Don\'t cache "This is a 404 Page which should not be cached."')
+      }
+
     } catch (e) {
       console.error(e);
     }
