@@ -161,8 +161,7 @@ export class Renderer {
         timeout: this.config.timeout > 300000 ? this.config.timeout : 300000,
         waitUntil: 'domcontentloaded',
       });
-      // change default timeout from 30000 to 60000
-      await page.setDefaultTimeout(60000);
+      await page.setDefaultTimeout(30000);
       await page.waitForSelector('#toast-root');
       await page.waitForSelector('[class*="-loadingIndicator__"]', { hidden: true});
       await page.waitForSelector('[class*="_pending-"]', { hidden: true});
@@ -182,7 +181,12 @@ export class Renderer {
         `).length
       );
       if (await page.$('[class*="-breadcrumbs-"]') !== null) {
-        await page.waitForSelector('[class*="-breadcrumbs-breadcrumbs__link-"]');
+        await page.waitForFunction(() =>
+          document.querySelectorAll(`
+              [class*="-breadcrumbs-breadcrumbs__link-"],
+              [class*="emptyBreadCrumbs"]
+          `).length
+        );
       }
       if (await page.$('main > [class*="-errorView-"]') !== null) {
         throw new Error('Don\'t cache "This is a 404 Page which should not be cached."')
