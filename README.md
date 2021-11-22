@@ -284,7 +284,8 @@ for Puppeteer.
     "--use-gl=swiftshader",
     "--use-mock-keychain",
     "--disable-dev-shm-usage"
-  ]
+  ],
+  "querySelectorAll": "main > [class*=\"-bannerImage-\"], main > [class*= \"main-page- \"], main > [class*= \"-RootComponents- \"], [class*= \"-breadcrumbs- \"], main > [class*= \"-errorView- \"], main > [class*= \"-layoutContainer- \"], main > [class*= \"-ProductFullDetail- \"], main > div > [class*= \"-components-base-grid- \"], main > div > [class*= \"-contentBlocks- \"], main > div > [class*= \"-summaryFinder- \"], main > h1"
 }
 
 ```

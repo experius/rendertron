@@ -258,6 +258,7 @@ test('whitelist ensures other urls do not get rendered', async (t: ExecutionCont
     closeBrowser: false,
     restrictedUrlPattern: null,
     stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+    querySelectorAll: ''
   };
   const server = request(await new Rendertron().initialize(mockConfig));
 
@@ -295,6 +296,7 @@ test('endpont for invalidating memory cache works if configured', async (t: Exec
     closeBrowser: false,
     restrictedUrlPattern: null,
     stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+    querySelectorAll: ''
   };
   const cached_server = request(await new Rendertron().initialize(mockConfig));
   const test_url = `${testBase}basic-script.html`;
@@ -345,6 +347,7 @@ test('endpont for invalidating filesystem cache works if configured', async (t: 
     closeBrowser: false,
     restrictedUrlPattern: null,
     stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+    querySelectorAll: ''
   };
   const cached_server = request(await new Rendertron().initialize(mock_config));
   const test_url = `/render/${testBase}basic-script.html`;
@@ -400,6 +403,7 @@ test('http header should be set via config', async (t: ExecutionContext) => {
     closeBrowser: false,
     restrictedUrlPattern: null,
     stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+    querySelectorAll: ''
   };
   server = request(await rendertron.initialize(mock_config));
   await app.listen(1237);
@@ -434,6 +438,7 @@ test.serial(
       closeBrowser: false,
       restrictedUrlPattern: null,
       stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+      querySelectorAll: ''
     };
     const cached_server = request(
       await new Rendertron().initialize(mock_config)
@@ -491,6 +496,7 @@ test.serial(
       closeBrowser: false,
       restrictedUrlPattern: null,
       stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+      querySelectorAll: ''
     };
     const cached_server = request(
       await new Rendertron().initialize(mock_config)
@@ -574,6 +580,7 @@ test('urls mathing pattern are restricted', async (t) => {
     closeBrowser: false,
     restrictedUrlPattern: '.*(\\.test.html)($|\\?)',
     stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
+    querySelectorAll: ''
   };
   const cached_server = request(
     await new Rendertron().initialize(mock_config)

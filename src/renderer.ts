@@ -161,12 +161,9 @@ export class Renderer {
         timeout: this.config.timeout > 300000 ? this.config.timeout : 300000,
         waitUntil: 'domcontentloaded',
       });
-      await page.setDefaultTimeout(30000);
-      await page.waitForSelector('#toast-root');
-      await page.waitForSelector('[class*="-loadingIndicator__"]', { hidden: true});
-      await page.waitForSelector('[class*="_pending-"]', { hidden: true});
-      await page.waitForFunction(() =>
-        document.querySelectorAll(`
+      await page.setDefaultTimeout(10000);
+      const selector = this.config.querySelectorAll ?
+          this.config.querySelectorAll :`
             main > [class*="-bannerImage-"],
             main > [class*="main-page-"],
             main > [class*="-RootComponents-"],
@@ -178,8 +175,10 @@ export class Renderer {
             main > div > [class*="-contentBlocks-"],
             main > div > [class*="-summaryFinder-"],
             main > h1
-        `).length
-      );
+        `;
+      await page.waitForFunction((selector: string) =>
+        document.querySelectorAll(`${selector}`).length
+      , {}, selector);
       if (await page.$('[class*="-breadcrumbs-"]') !== null) {
         await page.waitForFunction(() =>
           document.querySelectorAll(`
