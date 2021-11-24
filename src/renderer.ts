@@ -162,23 +162,8 @@ export class Renderer {
         waitUntil: 'domcontentloaded',
       });
       await page.setDefaultTimeout(10000);
-      const selector = this.config.querySelectorAll ?
-          this.config.querySelectorAll :`
-            main > [class*="-bannerImage-"],
-            main > [class*="main-page-"],
-            main > [class*="-RootComponents-"],
-            [class*="-breadcrumbs-"],
-            main > [class*="-errorView-"],
-            main > [class*="-layoutContainer-"],
-            main > [class*="-ProductFullDetail-"],
-            main > div > [class*="-components-base-grid-"],
-            main > div > [class*="-contentBlocks-"],
-            main > div > [class*="-summaryFinder-"],
-            main > h1
-        `;
-      await page.waitForFunction((selector: string) =>
-        document.querySelectorAll(`${selector}`).length
-      , {}, selector);
+      await page.waitForFunction('window.prerenderReady === true || document.querySelectorAll(`main > [class*="-errorView-"]`).length');
+
       if (await page.$('[class*="-breadcrumbs-"]') !== null) {
         await page.waitForFunction(() =>
           document.querySelectorAll(`

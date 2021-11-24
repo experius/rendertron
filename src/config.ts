@@ -69,7 +69,7 @@ export class ConfigManager {
     closeBrowser: false,
     restrictedUrlPattern: null,
     stripSelectors: 'script:not([type]), script[type*="javascript"], script[type="module"], link[rel=import]',
-    querySelectorAll: 'main > [class*="-bannerImage-"], main > [class*="main-page-"], main > [class*="-RootComponents-"], [class*="-breadcrumbs-"], main > [class*="-errorView-"], main > [class*="-layoutContainer-"], main > [class*="-ProductFullDetail-"], main > div > [class*="-components-base-grid-"], main > div > [class*="-contentBlocks-"], main > div > [class*="-summaryFinder-"], main > h1'
+    querySelectorAll: ''
   };
 
   static async getConfiguration(): Promise<Config> {
