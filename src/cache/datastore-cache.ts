@@ -20,7 +20,7 @@
 'use strict';
 
 import Koa from 'koa';
-import { Config, ConfigManager } from './config';
+import { Config, ConfigManager } from '../config';
 
 import { Datastore } from '@google-cloud/datastore';
 import { entity } from '@google-cloud/datastore/build/src/entity';

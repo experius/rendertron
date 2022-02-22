@@ -60,7 +60,7 @@ export class Rendertron {
 
     // Optionally enable cache for rendering requests.
     if (this.config.cache === 'datastore') {
-      const { DatastoreCache } = await import('./datastore-cache');
+      const { DatastoreCache } = await import('./cache/datastore-cache');
       const datastoreCache = new DatastoreCache();
       this.app.use(
         route.get('/invalidate/:url(.*)', datastoreCache.invalidateHandler())
@@ -68,9 +68,9 @@ export class Rendertron {
       this.app.use(
         route.get('/invalidate/', datastoreCache.clearAllCacheHandler())
       );
-      this.app.use(datastoreCache.middleware());
+      // this.app.use(datastoreCache.middleware());
     } else if (this.config.cache === 'memory') {
-      const { MemoryCache } = await import('./memory-cache');
+      const { MemoryCache } = await import('./cache/memory-cache');
       const memoryCache = new MemoryCache();
       this.app.use(
         route.get('/invalidate/:url(.*)', memoryCache.invalidateHandler())
@@ -78,9 +78,9 @@ export class Rendertron {
       this.app.use(
         route.get('/invalidate/', memoryCache.clearAllCacheHandler())
       );
-      this.app.use(memoryCache.middleware());
+      // this.app.use(memoryCache.middleware());
     } else if (this.config.cache === 'filesystem') {
-      const { FilesystemCache } = await import('./filesystem-cache');
+      const { FilesystemCache } = await import('./cache/filesystem-cache');
       const filesystemCache = new FilesystemCache(this.config);
       this.app.use(
         route.get('/invalidate/:url(.*)', filesystemCache.invalidateHandler())
@@ -88,12 +88,29 @@ export class Rendertron {
       this.app.use(
         route.get('/invalidate/', filesystemCache.clearAllCacheHandler())
       );
-      this.app.use(new FilesystemCache(this.config).middleware());
+      // this.app.use(new FilesystemCache(this.config).middleware());
+    } else if (this.config.cache === 'filesystem-tags') {
+      const { FilesystemTagsCache } = await import('./cache/filesystem-tags-cache');
+      const filesystemTagsCache = new FilesystemTagsCache(this.config);
+
+      this.app.use(
+          route.get('/invalidate/:url(.*)', filesystemTagsCache.invalidateHandler())
+      );
+
+      this.app.use(
+          route.get('/invalidate/', filesystemTagsCache.clearAllCacheHandler())
+      );
+      this.app.use(new FilesystemTagsCache(this.config).middleware());
     }
 
     this.app.use(
       route.get('/render/:url(.*)', this.handleRenderRequest.bind(this))
     );
+
+    this.app.use(
+      route.get('/seo-snap/:url(.*)', this.handleSeoSnapRequest.bind(this))
+    );
+
     this.app.use(
       route.get('/screenshot/:url(.*)', this.handleScreenshotRequest.bind(this))
     );
@@ -138,10 +155,58 @@ export class Rendertron {
     return true;
   }
 
-  async handleRenderRequest(ctx: Koa.Context, url: string) {
+
+
+
+  async handleSeoSnapRequest(ctx: Koa.Context, url: string) {
+    console.log('--- start seoSnap ---');
+    console.log('url: ' + url);
+
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
+
+    if (this.restricted(url)) {
+      ctx.status = 403;
+      return;
+    }
+
+    const mobileVersion = 'mobile' in ctx.query ? true : false;
+    const serialized = await this.renderer.serialize(
+        url,
+        mobileVersion,
+        ctx.query.timezoneId
+    );
+
+    for (const key in this.config.headers) {
+      ctx.set(key, this.config.headers[key]);
+    }
+
+    // Mark the response as coming from Rendertron.
+    ctx.set('x-renderer', 'rendertron');
+    // Add custom headers to the response like 'Location'
+    serialized.customHeaders.forEach((value: string, key: string) =>
+        ctx.set(key, value)
+    );
+    ctx.status = serialized.status;
+
+    ctx.body = serialized.content;
+    console.log('--- end seoSnap ---');
+  }
+
+
+
+
+
+  async handleRenderRequest(ctx: Koa.Context, url: string) {
+    console.log(' - --- start  handleRenderRequest ----');
+    console.log(url);
+    console.log('-x-x-x-');
+
+    if (!this.renderer) {
+      throw new Error('No renderer initalized yet.');
+    }
+    // this.renderer.setMagentoTags('');
 
     if (this.restricted(url)) {
       ctx.status = 403;
@@ -160,14 +225,36 @@ export class Rendertron {
       ctx.set(key, this.config.headers[key]);
     }
 
+    // console.log("x");
+    // console.log(this.renderer.getMagentoTags());
+    // ctx.cookies.set('xMagentoTags', this.renderer.getMagentoTags(url))
+
+    // Add the magento tags to the response headers.
+    // sessionStorage.setItem('key', 'value');
+    // window.sessionStorage.setItem('xMagentoTag', this.renderer.getMagentoTags());
+    // document.cookie = "xMagentoTags=" + this.renderer.getMagentoTags();
+
+    // ctx.set('x-magento-tags', this.renderer.getMagentoTags(url));
+
     // Mark the response as coming from Rendertron.
     ctx.set('x-renderer', 'rendertron');
+
     // Add custom headers to the response like 'Location'
     serialized.customHeaders.forEach((value: string, key: string) =>
       ctx.set(key, value)
     );
     ctx.status = serialized.status;
+
+    // ctx.body = {
+    //   'responseBody': serialized.content,
+    //   'magentoTags': this.renderer.getMagentoTags(url),
+    // };
+
     ctx.body = serialized.content;
+
+    Renderer.unsetMagentoTags(url);
+
+    console.log(' - --- END handleRenderRequest ----')
   }
 
   async handleScreenshotRequest(ctx: Koa.Context, url: string) {

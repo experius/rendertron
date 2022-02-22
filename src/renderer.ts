@@ -25,6 +25,7 @@ const MOBILE_USERAGENT =
 export class Renderer {
   private browser: puppeteer.Browser;
   private config: Config;
+  private static magentoTags: {[key: string]: string} = {}
 
   constructor(browser: puppeteer.Browser, config: Config) {
     this.browser = browser;
@@ -149,6 +150,25 @@ export class Renderer {
     // to return a partial response for what was able to be rendered in that
     // time frame.
     page.on('response', (r: puppeteer.HTTPResponse) => {
+      if (r.request().method() == 'GET' ) {
+        if (!Renderer.magentoTags[page.url()]) {
+          Renderer.magentoTags[page.url()] = '';
+        }
+
+        if (r.headers()['x-magento-tags']) {
+          console.log("add keys for url: " + page.url())
+
+          // TODO fix for multiple pages!!
+          Renderer.magentoTags[page.url()] += r.headers()['x-magento-tags'];
+        }
+
+        if (r.headers().xkey != undefined && r.headers().xkey != '') {
+          console.log("add keys for url: " + page.url())
+          // TODO fix for multiple pages!!
+          Renderer.magentoTags[page.url()] += r.headers().xkey;
+        }
+      }
+
       if (!response) {
         response = r;
       }
@@ -279,6 +299,41 @@ export class Renderer {
         : new Map(),
       content: result,
     };
+  }
+
+  static getMagentoTags(url: string): string
+  {
+    // TODO fix for multiple pages!!
+    console.log('Get magentoTags for: ' + url);
+
+    if (Renderer.magentoTags[url]) {
+      // Remove duplicate tags
+      const tags = Renderer.magentoTags[url]
+      const unique = Array.from(new Set(tags.split(' ')));
+
+      console.log('magentoTags: ' + Renderer.magentoTags[url].length);
+      console.log('new magentoTags: ' + unique.join(' ').length);
+
+      return unique.join(' ');
+    }
+
+    console.log('magentoTags: -1');
+
+    return '';
+  }
+
+  static setMagentoTags(magentoTag: string, url: string): void
+  {
+    if (Renderer.magentoTags[url]) {
+      Renderer.magentoTags[url] = magentoTag;
+    }
+  }
+
+  static unsetMagentoTags(url: string): void
+  {
+    if (Renderer.magentoTags[url]) {
+      delete Renderer.magentoTags[url];
+    }
   }
 
   async screenshot(

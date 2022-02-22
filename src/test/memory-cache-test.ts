@@ -21,7 +21,7 @@ import koaCompress from 'koa-compress';
 import request from 'supertest';
 import route from 'koa-route';
 
-import { MemoryCache } from '../memory-cache';
+import { MemoryCache } from '../cache/memory-cache';
 import test, { ExecutionContext } from 'ava';
 
 const app = new Koa();

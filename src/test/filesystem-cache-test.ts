@@ -21,7 +21,7 @@ import koaCompress from 'koa-compress';
 import request from 'supertest';
 import route from 'koa-route';
 
-import { FilesystemCache } from '../filesystem-cache';
+import { FilesystemCache } from '../cache/filesystem-cache';
 import { ConfigManager } from '../config';
 import test, { ExecutionContext } from 'ava';
 

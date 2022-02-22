@@ -22,7 +22,7 @@ import koaCompress from 'koa-compress';
 import request from 'supertest';
 import route from 'koa-route';
 
-import { DatastoreCache } from '../datastore-cache';
+import { DatastoreCache } from '../cache/datastore-cache';
 
 const app = new Koa();
 const server = request(app.listen());

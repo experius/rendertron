@@ -24,7 +24,7 @@ import { createHash } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Koa from 'koa';
-import { Config } from './config';
+import { Config } from '../config';
 
 type CacheContent = {
   saved: Date;
@@ -38,6 +38,7 @@ export class FilesystemCache {
   private cacheConfig: { [key: string]: string };
 
   constructor(config: Config) {
+    console.log("FilesystemCache constructor")
     this.config = config;
     this.cacheConfig = this.config.cacheConfig;
   }
@@ -117,6 +118,9 @@ export class FilesystemCache {
     const responseHeaders = ctx.response;
     const responseBody = ctx.body;
     const request = ctx.request;
+
+    // ctx.set('x-magento-tags', '');
+
     // check size of stored cache to see if we are over the max number of allowed entries, and max entries isn't disabled with a value of -1 and remove over quota, removes oldest first
     if (parseInt(this.config.cacheConfig.cacheMaxEntries) !== -1) {
       const numCache = fs.readdirSync(this.getDir(''));
@@ -139,13 +143,24 @@ export class FilesystemCache {
         });
       }
     }
+
+    // const cacheKeys: { cacheKeys: string } = {cacheKeys: ctx.get('x-magento-tags') || ''};
+
+    // console.log("cacheKeys")
+    // console.log(cacheKeys)
+    const cacheKeys: { cacheKeys: string } = {cacheKeys: ctx.cookies.get('xMagentoTags') || ''};
+    // ctx.set('x-magento-tags', '');
+
     fs.writeFileSync(
       path.join(this.getDir(''), key + '.json'),
-      JSON.stringify({ responseBody, responseHeaders, request })
+      JSON.stringify({ responseBody, responseHeaders, request, cacheKeys })
     );
+
+    // ctx.set('x-magento-tags', '');
   }
 
   getCachedContent(ctx: Koa.Context, key: string): CacheContent | null {
+    console.log(" getCachedContent ")
     if (ctx.query.refreshCache) {
       return null;
     } else {
@@ -154,6 +169,7 @@ export class FilesystemCache {
           fs.readFileSync(path.join(this.getDir(''), key + '.json'), 'utf8')
         );
         const payload = cacheFile.responseBody;
+        // const payload = cacheFile.responseBody.responseBody;
         const response = JSON.stringify(cacheFile.responseHeaders);
         if (!payload) {
           return null;
