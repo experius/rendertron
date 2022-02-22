@@ -184,7 +184,9 @@ export class Renderer {
           document.querySelectorAll(`
               [class*="-breadcrumbs-breadcrumbs__link-"],
               [class*="emptyBreadCrumbs"]
-          `).length
+          `).length &&
+          !document.title.includes('Home Page') &&
+          !document.title.includes('undefined')
         );
       }
       if (await page.$('main > [class*="-errorView-"]') !== null) {

@@ -180,7 +180,7 @@ export function makeMiddleware(options: Options): express.Handler {
       forwardedHost && allowedForwardedHosts.includes(forwardedHost)
         ? forwardedHost
         : req.get('host');
-    const incomingUrl = req.protocol + '://' + host + req.originalUrl;
+    const incomingUrl = 'https://' + host + req.originalUrl;
     let renderUrl = proxyUrl + encodeURIComponent(incomingUrl);
     if (injectShadyDom) {
       renderUrl += '?wc-inject-shadydom=true';
