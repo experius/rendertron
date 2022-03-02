@@ -184,14 +184,17 @@ export class Renderer {
           document.querySelectorAll(`
               [class*="-breadcrumbs-breadcrumbs__link-"],
               [class*="emptyBreadCrumbs"]
-          `).length &&
-          !document.title.includes('Home Page') &&
-          !document.title.includes('undefined')
+          `).length
         );
       }
       if (await page.$('main > [class*="-errorView-"]') !== null) {
         throw new Error('Don\'t cache "This is a 404 Page which should not be cached."')
       }
+
+        await page.waitForFunction(() =>
+            !document.title.includes('Home Page') &&
+            !document.title.includes('undefined')
+        );
 
     } catch (e) {
       console.error(e);
