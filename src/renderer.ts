@@ -175,7 +175,8 @@ export class Renderer {
             main > div > [class*="-components-base-grid-"],
             main > div > [class*="-contentBlocks-"],
             main > div > [class*="-summaryFinder-"],
-            main > h1
+            main > h1,
+            main > form
         `;
       await page.waitForFunction((selector: string) =>
         document.querySelectorAll(`${selector}`).length
