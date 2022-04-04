@@ -171,7 +171,7 @@ export class Renderer {
             main > [class*="-errorView-"],
             main > [class*="-layoutContainer-"],
             main > [class*="-ProductFullDetail-"],
-            main > [class*="-productFullDetail-"],
+            main > [class*="-productFullDetail-"] form,
             main > div > [class*="-components-base-grid-"],
             main > div > [class*="-contentBlocks-"],
             main > div > [class*="-summaryFinder-"],
