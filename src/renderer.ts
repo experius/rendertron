@@ -129,7 +129,7 @@ export class Renderer {
 
     await page.setRequestInterception(true);
 
-    page.on('request', (interceptedRequest: puppeteer.HTTPRequest) => {
+    page.on('request', (interceptedRequest: puppeteer.Request) => {
       if (this.restrictRequest(interceptedRequest.url())) {
         interceptedRequest.abort();
       } else {
@@ -143,12 +143,12 @@ export class Renderer {
       }
     });
 
-    let response: puppeteer.HTTPResponse | null = null;
+    let response: puppeteer.Response | null = null;
     // Capture main frame response. This is used in the case that rendering
     // times out, which results in puppeteer throwing an error. This allows us
     // to return a partial response for what was able to be rendered in that
     // time frame.
-    page.on('response', (r: puppeteer.HTTPResponse) => {
+    page.on('response', (r: puppeteer.Response) => {
       if (!response) {
         response = r;
       }
@@ -311,7 +311,7 @@ export class Renderer {
 
     await page.setRequestInterception(true);
 
-    page.addListener('request', (interceptedRequest: puppeteer.HTTPRequest) => {
+    page.addListener('request', (interceptedRequest: puppeteer.Request) => {
       if (this.restrictRequest(interceptedRequest.url())) {
         interceptedRequest.abort();
       } else {
@@ -323,7 +323,7 @@ export class Renderer {
       await page.emulateTimezone(timezoneId);
     }
 
-    let response: puppeteer.HTTPResponse | null = null;
+    let response: puppeteer.Response | null = null;
 
     try {
       // Navigate to page. Wait until there are no oustanding network requests.
