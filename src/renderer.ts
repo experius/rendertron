@@ -178,7 +178,9 @@ export class Renderer {
             main > h1,
             main > form
         `;
-      await page.waitForFunction((selector: string) =>
+        await page.waitForSelector('[class*="_pending-"]', { hidden: true});
+
+        await page.waitForFunction((selector: string) =>
         document.querySelectorAll(`${selector}`).length
       , {}, selector);
       if (await page.$('[class*="-breadcrumbs-"]') !== null) {
