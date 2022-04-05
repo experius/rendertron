@@ -133,7 +133,7 @@ export class Renderer {
 
     await page.setRequestInterception(true);
 
-    page.on('request', (interceptedRequest: puppeteer.HTTPRequest) => {
+    page.on('request', (interceptedRequest: puppeteer.Request) => {
       if (this.restrictRequest(interceptedRequest.url())) {
         interceptedRequest.abort();
       } else {
@@ -147,12 +147,13 @@ export class Renderer {
       }
     });
 
-    let response: puppeteer.HTTPResponse | null = null;
+    let response: puppeteer.Response | null = null;
     // Capture main frame response. This is used in the case that rendering
     // times out, which results in puppeteer throwing an error. This allows us
     // to return a partial response for what was able to be rendered in that
     // time frame.
-    page.on('response', (r: puppeteer.HTTPResponse) => {
+
+    page.on('response', (r: puppeteer.Response) => {
       if (r.request().method() == 'GET' ) {
         if (requestUrl.endsWith('/')) {
           requestUrl = requestUrl.substring(0, requestUrl.length - 1);
@@ -199,10 +200,12 @@ export class Renderer {
             main > [class*="-errorView-"],
             main > [class*="-layoutContainer-"],
             main > [class*="-ProductFullDetail-"],
+            main > [class*="-productFullDetail-"] form,
             main > div > [class*="-components-base-grid-"],
             main > div > [class*="-contentBlocks-"],
             main > div > [class*="-summaryFinder-"],
-            main > h1
+            main > h1,
+            main > form
         `;
       await page.waitForFunction((selector: string) =>
         document.querySelectorAll(`${selector}`).length
@@ -218,6 +221,11 @@ export class Renderer {
       if (await page.$('main > [class*="-errorView-"]') !== null) {
         throw new Error('Don\'t cache "This is a 404 Page which should not be cached."')
       }
+
+        await page.waitForFunction(() =>
+            !document.title.includes('Home Page') &&
+            !document.title.includes('undefined')
+        );
 
     } catch (e) {
       console.error(e);
@@ -383,7 +391,7 @@ export class Renderer {
 
     await page.setRequestInterception(true);
 
-    page.addListener('request', (interceptedRequest: puppeteer.HTTPRequest) => {
+    page.addListener('request', (interceptedRequest: puppeteer.Request) => {
       if (this.restrictRequest(interceptedRequest.url())) {
         interceptedRequest.abort();
       } else {
@@ -395,7 +403,7 @@ export class Renderer {
       await page.emulateTimezone(timezoneId);
     }
 
-    let response: puppeteer.HTTPResponse | null = null;
+    let response: puppeteer.Response | null = null;
 
     try {
       // Navigate to page. Wait until there are no oustanding network requests.
