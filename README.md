@@ -260,7 +260,6 @@ for Puppeteer.
   "width": 1280,
   "height": 1200,
   "widthMobile": 375,
-  "widthMobile": 375,
   "puppeteerArgs": [
     "--user-data-dir=/app/cache/myUserDataDir",
     "--autoplay-policy=user-gesture-required",

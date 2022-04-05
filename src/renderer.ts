@@ -26,6 +26,7 @@ export class Renderer {
   private browser: puppeteer.Browser;
   private config: Config;
   private static magentoTags: {[key: string]: string} = {}
+  // private static redirects: {[key: string]: object} = {}
 
   constructor(browser: puppeteer.Browser, config: Config) {
     this.browser = browser;
@@ -51,6 +52,8 @@ export class Renderer {
     isMobile: boolean,
     timezoneId?: string
   ): Promise<SerializedResponse> {
+    // this.redirects[requestUrl] = requestUrl
+
     /**
      * Executed on the page after the page has loaded. Strips script and
      * import tags to prevent further loading of resources.
@@ -151,21 +154,26 @@ export class Renderer {
     // time frame.
     page.on('response', (r: puppeteer.HTTPResponse) => {
       if (r.request().method() == 'GET' ) {
-        if (!Renderer.magentoTags[page.url()]) {
-          Renderer.magentoTags[page.url()] = '';
+        if (requestUrl.endsWith('/')) {
+          requestUrl = requestUrl.substring(0, requestUrl.length - 1);
+        }
+
+        if (!Renderer.magentoTags[requestUrl]) {
+          Renderer.magentoTags[requestUrl] = '';
         }
 
         if (r.headers()['x-magento-tags']) {
-          console.log("add keys for url: " + page.url())
+          // console.log("add keys for url: " + requestUrl);
 
           // TODO fix for multiple pages!!
-          Renderer.magentoTags[page.url()] += r.headers()['x-magento-tags'];
+          Renderer.magentoTags[requestUrl] += ' ' + r.headers()['x-magento-tags'];
         }
 
         if (r.headers().xkey != undefined && r.headers().xkey != '') {
-          console.log("add keys for url: " + page.url())
+          // console.log("add keys for url: " + requestUrl);
+
           // TODO fix for multiple pages!!
-          Renderer.magentoTags[page.url()] += r.headers().xkey;
+          Renderer.magentoTags[requestUrl] += ' ' + r.headers().xkey;
         }
       }
 
@@ -303,7 +311,15 @@ export class Renderer {
 
   static getMagentoTags(url: string): string
   {
-    // TODO fix for multiple pages!!
+    // TODO fix this in a nice way?
+    url = url.replace('%3F', '?');
+    url = url.replace('%3D', '=');
+
+    if (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+
+    console.log('Get magentoTags for: ' + url);
     console.log('Get magentoTags for: ' + url);
 
     if (Renderer.magentoTags[url]) {
@@ -324,6 +340,10 @@ export class Renderer {
 
   static setMagentoTags(magentoTag: string, url: string): void
   {
+    if (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+
     if (Renderer.magentoTags[url]) {
       Renderer.magentoTags[url] = magentoTag;
     }
@@ -331,6 +351,10 @@ export class Renderer {
 
   static unsetMagentoTags(url: string): void
   {
+    if (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+
     if (Renderer.magentoTags[url]) {
       delete Renderer.magentoTags[url];
     }

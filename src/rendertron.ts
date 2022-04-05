@@ -80,6 +80,7 @@ export class Rendertron {
       );
       // this.app.use(memoryCache.middleware());
     } else if (this.config.cache === 'filesystem') {
+      console.log("CONFFFF filesystem")
       const { FilesystemCache } = await import('./cache/filesystem-cache');
       const filesystemCache = new FilesystemCache(this.config);
       this.app.use(
@@ -90,6 +91,7 @@ export class Rendertron {
       );
       // this.app.use(new FilesystemCache(this.config).middleware());
     } else if (this.config.cache === 'filesystem-tags') {
+      console.log("CONFFFF TAGGGGSSSS")
       const { FilesystemTagsCache } = await import('./cache/filesystem-tags-cache');
       const filesystemTagsCache = new FilesystemTagsCache(this.config);
 
@@ -155,10 +157,9 @@ export class Rendertron {
     return true;
   }
 
-
-
-
   async handleSeoSnapRequest(ctx: Koa.Context, url: string) {
+    const start: Date= new Date();
+
     console.log('--- start seoSnap ---');
     console.log('url: ' + url);
 
@@ -191,6 +192,11 @@ export class Rendertron {
     ctx.status = serialized.status;
 
     ctx.body = serialized.content;
+
+    const end: Date = new Date();
+    const difference = (end.getTime() - start.getTime()) / 1000;
+
+    console.log('time: ' + difference);
     console.log('--- end seoSnap ---');
   }
 

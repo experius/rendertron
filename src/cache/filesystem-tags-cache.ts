@@ -272,8 +272,18 @@ export class FilesystemTagsCache {
             if (ctx.status === 200) {
                 cacheContent(key, ctx);
 
+                console.log("before sanitizeKey: " + ctx.url);
                 const clearedUrl: string = this.sanitizeKey(ctx.url);
-                ctx.body = Renderer.getMagentoTags(clearedUrl);
+                console.log("Filesystem Tags Cache middeleware constructor");
+
+                // ctx.body = Renderer.getMagentoTags(clearedUrl);
+
+                // TODO add check for refresh otherwise it always returns JSON
+                ctx.body = {
+                    html: ctx.body,
+                    tags: Renderer.getMagentoTags(clearedUrl),
+                };
+
                 Renderer.unsetMagentoTags(clearedUrl)
             }
         }.bind(this);
