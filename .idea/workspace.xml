@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0f8899d8-d7d6-4c1e-9fce-eddbe133b666" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="212gP5CsJ6o3YDuEEAN5QGGKetT" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0f8899d8-d7d6-4c1e-9fce-eddbe133b666" name="Changes" comment="" />
+      <created>1637144571833</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1637144571833</updated>
+      <workItem from="1637144575278" duration="8374000" />
+      <workItem from="1637220544007" duration="8404000" />
+      <workItem from="1637247098576" duration="1481000" />
+      <workItem from="1637308125538" duration="1129000" />
+      <workItem from="1637584529634" duration="1489000" />
+      <workItem from="1637761863126" duration="2595000" />
+      <workItem from="1637844428365" duration="849000" />
+      <workItem from="1637847382647" duration="19000" />
+      <workItem from="1637868498016" duration="8009000" />
+      <workItem from="1639384719204" duration="1439000" />
+      <workItem from="1639564281319" duration="927000" />
+      <workItem from="1645519452182" duration="932000" />
+      <workItem from="1645531581740" duration="647000" />
+      <workItem from="1645546910076" duration="1004000" />
+      <workItem from="1646216731135" duration="497000" />
+      <workItem from="1649084556782" duration="8438000" />
+      <workItem from="1649095640219" duration="90000" />
+      <workItem from="1649172299432" duration="1030000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
