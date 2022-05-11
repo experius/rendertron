@@ -5,8 +5,7 @@
   "timeout": 300000,
   "cacheConfig": {
     "cacheDurationMinutes": 10080,
-    "cacheMaxEntries": -1,
-    "snapshotDir": "/app/cache"
+    "cacheMaxEntries": -1
   },
   "width": 1280,
   "height": 1200,
