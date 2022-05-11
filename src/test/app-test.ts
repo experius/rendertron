@@ -62,7 +62,28 @@ test('Renders base page refreshCache', async (t: ExecutionContext) => {
   t.is(res.header['content-type'], 'application/json; charset=utf-8');
 });
 
-// test('Render base page refreshCache no h1 tag', async (t: ExecutionContext) => {
-//   const res = await server.get(`/seo-snap/${testBase}base-page-no-h1.html?refreshCache=true`);
+test('Renders base page js', async (t: ExecutionContext) => {
+  const res = await server.get(`/seo-snap/${testBase}base-page-js.html?refreshCache=true`);
+
+  t.is(res.status, 200);
+  t.is(res.body.tags, "  ");
+  t.is(res.body.html.match(/<h1[^>]*>([^<]+)<\/h1>/)[1], "Injected h1 tag");
+  t.is(res.header['content-type'], 'application/json; charset=utf-8');
+});
+
+// TODO why does this timeout..
+// test('Non existing page', async (t: ExecutionContext) => {
+//   const res = await server.get(`/seo-snap/${testBase}non-existing.html`);
+//
+//   console.log("test");
+//   console.log(res.status);
+//   console.log(res.body);
+//
 //   t.is(res.status, 500);
+// });
+//
+// test('Render base page refreshCache no h1 tag', async (t: ExecutionContext) => {
+//   let r = await server.get(`/seo-snap/${testBase}base-page-no-h1.html?refreshCache=true`);
+//
+//   t.is(r.status, 500);
 // });
