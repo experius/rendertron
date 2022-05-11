@@ -106,6 +106,7 @@ export class FilesystemTagsCache {
 
     getDir = (key: string) => {
         const dir = this.cacheConfig.snapshotDir;
+
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
@@ -281,7 +282,7 @@ export class FilesystemTagsCache {
                 // TODO add check for refresh otherwise it always returns JSON
                 ctx.body = {
                     html: ctx.body,
-                    tags: Renderer.getMagentoTags(clearedUrl),
+                    tags: ' ' + Renderer.getMagentoTags(clearedUrl) + ' ',
                 };
 
                 Renderer.unsetMagentoTags(clearedUrl)
