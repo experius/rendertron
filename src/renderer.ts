@@ -158,7 +158,7 @@ export class Renderer {
       // Navigate to page. Wait until there are no oustanding network requests.
       response = await page.goto(requestUrl, {
         // default minimum timeout should be 300000 because we have a timeout of 60000 for 5 selectors
-        timeout: this.config.timeout > 300000 ? this.config.timeout : 300000,
+        timeout: this.config.timeout > 10000 ? this.config.timeout : 10000,
         waitUntil: 'domcontentloaded',
       });
       await page.setDefaultTimeout(10000);
@@ -203,6 +203,15 @@ export class Renderer {
 
     } catch (e) {
       console.error(e);
+      if (e.name == 'TimeoutError') {
+        await page.close();
+        if (this.config.closeBrowser) {
+          await this.browser.close();
+        }
+        const timeoutHeaders = new Map();
+        timeoutHeaders.set('Connection', 'close')
+        return { status: 408, customHeaders: timeoutHeaders, content: 'Timeout: The page that should be rendered is to slow!' };
+      }
     }
 
     if (!response) {
