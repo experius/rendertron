@@ -320,8 +320,8 @@ export class Renderer {
   static getMagentoTags(url: string): string
   {
     // TODO fix this in a nice way?
-    url = url.replace('%3F', '?');
-    url = url.replace('%3D', '=');
+    // url = url.replace('%3F', '?');
+    // url = url.replace('%3D', '=');
 
     if (url.endsWith('/')) {
       url = url.substring(0, url.length - 1);

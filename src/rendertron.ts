@@ -173,8 +173,25 @@ export class Rendertron {
     }
 
     const mobileVersion = 'mobile' in ctx.query ? true : false;
+
+    console.log(" mobileVersion ???");
+    console.log(mobileVersion);
+    console.log(ctx.url);
+    console.log(ctx.query);
+
+    const uri = new URL(url)
+    for (const key in ctx.query) {
+      let data = ctx.query[key];
+
+      if (key != 'refreshCache') {
+        console.log(key);
+        console.log(data);
+        uri.searchParams.append(key, data);
+      }
+    }
+
     const serialized = await this.renderer.serialize(
-        url,
+        uri.toString(),
         mobileVersion,
         ctx.query.timezoneId
     );
@@ -257,6 +274,9 @@ export class Rendertron {
     // };
 
     ctx.body = serialized.content;
+
+    console.log("hallo??")
+    console.log(url)
 
     Renderer.unsetMagentoTags(url);
 
