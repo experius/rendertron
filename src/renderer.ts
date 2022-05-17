@@ -207,10 +207,13 @@ export class Renderer {
             main > h1,
             main > form
         `;
-      await page.waitForFunction((selector: string) =>
+
+        await page.waitForFunction((selector: string) =>
         document.querySelectorAll(`${selector}`).length
       , {}, selector);
-      if (await page.$('[class*="-breadcrumbs-"]') !== null) {
+        await page.waitForSelector('[class*="_pending-"]', { hidden: true});
+
+        if (await page.$('[class*="-breadcrumbs-"]') !== null) {
         await page.waitForFunction(() =>
           document.querySelectorAll(`
               [class*="-breadcrumbs-breadcrumbs__link-"],
