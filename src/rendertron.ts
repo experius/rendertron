@@ -181,11 +181,9 @@ export class Rendertron {
 
     const uri = new URL(url)
     for (const key in ctx.query) {
-      let data = ctx.query[key];
+      const data = ctx.query[key];
 
       if (key != 'refreshCache') {
-        console.log(key);
-        console.log(data);
         uri.searchParams.append(key, data);
       }
     }
