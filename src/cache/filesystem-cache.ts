@@ -47,6 +47,9 @@ export class FilesystemCache {
     const hash = 0;
     if (s.length === 0) return hash.toString();
 
+    console.log("hash code render <------")
+    console.log(s)
+
     return createHash('md5').update(s).digest('hex');
   };
 

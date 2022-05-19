@@ -52,7 +52,6 @@ export class Renderer {
     isMobile: boolean,
     timezoneId?: string
   ): Promise<SerializedResponse> {
-    // this.redirects[requestUrl] = requestUrl
 
     /**
      * Executed on the page after the page has loaded. Strips script and
@@ -164,14 +163,14 @@ export class Renderer {
         }
 
         if (r.headers()['x-magento-tags']) {
-          // console.log("add keys for url: " + requestUrl);
+          console.log("add keys for url: " + requestUrl);
 
           // TODO fix for multiple pages!!
           Renderer.magentoTags[requestUrl] += ' ' + r.headers()['x-magento-tags'];
         }
 
         if (r.headers().xkey != undefined && r.headers().xkey != '') {
-          // console.log("add keys for url: " + requestUrl);
+          console.log("add keys for url: " + requestUrl);
 
           // TODO fix for multiple pages!!
           Renderer.magentoTags[requestUrl] += ' ' + r.headers().xkey;
@@ -323,8 +322,6 @@ export class Renderer {
   static getMagentoTags(url: string): string
   {
     // TODO fix this in a nice way?
-    // url = url.replace('%3F', '?');
-    // url = url.replace('%3D', '=');
 
     if (url.endsWith('/')) {
       url = url.substring(0, url.length - 1);

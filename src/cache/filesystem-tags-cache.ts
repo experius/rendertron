@@ -49,6 +49,9 @@ export class FilesystemTagsCache {
         const hash = 0;
         if (s.length === 0) return hash.toString();
 
+        console.log("hash code render Tags <------")
+        console.log(s)
+
         return createHash('md5').update(s).digest('hex');
     };
 
@@ -65,9 +68,14 @@ export class FilesystemTagsCache {
             cacheKey = cacheKey.slice(0, -1);
         }
 
-        // remove /render/ from key, only at the start
+        // remove /seo-snap/ from key, only at the start
         if (cacheKey.startsWith('/seo-snap/')) {
             cacheKey = cacheKey.substring(10);
+        }
+
+        // remove /seo-snap/ from key, only at the start
+        if (cacheKey.startsWith('/render/')) {
+            cacheKey = cacheKey.substring(8);
         }
 
         // remove trailing slash from key
@@ -273,19 +281,18 @@ export class FilesystemTagsCache {
             if (ctx.status === 200) {
                 cacheContent(key, ctx);
 
-                console.log("before sanitizeKey: " + ctx.url);
-                const clearedUrl: string = this.sanitizeKey(ctx.url);
-                console.log("Filesystem Tags Cache middeleware constructor");
+                let url = ctx.url.split('?')[0]
+                url = url.replace('%3F', '?');
+                url = url.replace('%3D', '=');
 
-                // ctx.body = Renderer.getMagentoTags(clearedUrl);
+                if (ctx.query.refreshCache) {
+                    ctx.body = {
+                        html: ctx.body,
+                        tags: ' ' + Renderer.getMagentoTags(url) + ' ',
+                    };
+                }
 
-                // TODO add check for refresh otherwise it always returns JSON
-                ctx.body = {
-                    html: ctx.body,
-                    tags: ' ' + Renderer.getMagentoTags(clearedUrl) + ' ',
-                };
-
-                Renderer.unsetMagentoTags(clearedUrl)
+                Renderer.unsetMagentoTags(url)
             }
         }.bind(this);
     }

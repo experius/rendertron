@@ -179,17 +179,8 @@ export class Rendertron {
     console.log(ctx.url);
     console.log(ctx.query);
 
-    const uri = new URL(url)
-    for (const key in ctx.query) {
-      const data = ctx.query[key];
-
-      if (key != 'refreshCache') {
-        uri.searchParams.append(key, data);
-      }
-    }
-
     const serialized = await this.renderer.serialize(
-        uri.toString(),
+        url,
         mobileVersion,
         ctx.query.timezoneId
     );
@@ -220,14 +211,9 @@ export class Rendertron {
 
 
   async handleRenderRequest(ctx: Koa.Context, url: string) {
-    console.log(' - --- start  handleRenderRequest ----');
-    console.log(url);
-    console.log('-x-x-x-');
-
     if (!this.renderer) {
       throw new Error('No renderer initalized yet.');
     }
-    // this.renderer.setMagentoTags('');
 
     if (this.restricted(url)) {
       ctx.status = 403;
@@ -237,48 +223,23 @@ export class Rendertron {
     const mobileVersion = 'mobile' in ctx.query ? true : false;
 
     const serialized = await this.renderer.serialize(
-      url,
-      mobileVersion,
-      ctx.query.timezoneId
+        url,
+        mobileVersion,
+        ctx.query.timezoneId
     );
 
     for (const key in this.config.headers) {
       ctx.set(key, this.config.headers[key]);
     }
 
-    // console.log("x");
-    // console.log(this.renderer.getMagentoTags());
-    // ctx.cookies.set('xMagentoTags', this.renderer.getMagentoTags(url))
-
-    // Add the magento tags to the response headers.
-    // sessionStorage.setItem('key', 'value');
-    // window.sessionStorage.setItem('xMagentoTag', this.renderer.getMagentoTags());
-    // document.cookie = "xMagentoTags=" + this.renderer.getMagentoTags();
-
-    // ctx.set('x-magento-tags', this.renderer.getMagentoTags(url));
-
     // Mark the response as coming from Rendertron.
     ctx.set('x-renderer', 'rendertron');
-
     // Add custom headers to the response like 'Location'
     serialized.customHeaders.forEach((value: string, key: string) =>
-      ctx.set(key, value)
+        ctx.set(key, value)
     );
     ctx.status = serialized.status;
-
-    // ctx.body = {
-    //   'responseBody': serialized.content,
-    //   'magentoTags': this.renderer.getMagentoTags(url),
-    // };
-
     ctx.body = serialized.content;
-
-    console.log("hallo??")
-    console.log(url)
-
-    Renderer.unsetMagentoTags(url);
-
-    console.log(' - --- END handleRenderRequest ----')
   }
 
   async handleScreenshotRequest(ctx: Koa.Context, url: string) {
