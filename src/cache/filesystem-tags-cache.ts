@@ -281,7 +281,8 @@ export class FilesystemTagsCache {
             if (ctx.status === 200) {
                 cacheContent(key, ctx);
 
-                let url = ctx.url.split('?')[0]
+                let url: string = this.sanitizeKey(ctx.url);
+                url = url.split('?')[0]
                 url = url.replace('%3F', '?');
                 url = url.replace('%3D', '=');
 
