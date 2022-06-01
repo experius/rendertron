@@ -1,6 +1,6 @@
 # Rendertron
 
-[![CI](https://github.com/GoogleChrome/rendertron/workflows/CI/badge.svg)](https://github.com/GoogleChrome/rendertron/actions)
+[![CI](https://github.com/experius/rendertron/workflows/CI/badge.svg)](https://github.com/GoogleChrome/rendertron/actions)
 [![NPM package](https://img.shields.io/npm/v/rendertron.svg)](https://npmjs.org/package/rendertron)
 
 > Rendertron is a headless Chrome rendering solution designed to render & serialise web pages on the fly.
@@ -61,6 +61,21 @@ Rendertron is also compatible with [prerender.io middleware](https://prerender.i
 Note: the user agent lists differ there.
 
 ## API
+
+### SeoSnap
+
+```
+GET /seo-snap/<url>
+```
+
+The `seosnap` endpoint will render your page and serialize you page while adding the `x-magenot-tags`
+or the `xkey`. This endpoint will return JSON if `refreshCache` is enabled with the html and tags in it.
+
+- `mobile` defaults to `false`. Enable by passing `?mobile` to request the
+  mobile version of your site.
+- `refreshCache`: Pass `refreshCache=true` to ignore potentially cached render results
+  and treat the request as if it is not cached yet.
+  The new render result is used to replace the previous result.
 
 ### Render
 
