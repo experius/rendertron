@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2018 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,19 +16,17 @@
 
 'use strict';
 
+import test, { ExecutionContext } from 'ava';
 import Koa from 'koa';
 import koaCompress from 'koa-compress';
 import request from 'supertest';
 import route from 'koa-route';
 
-import { FilesystemCache } from '../filesystem-cache';
-import { ConfigManager } from '../config';
-import test, { ExecutionContext } from 'ava';
+import { DatastoreCache } from '../cache/datastore-cache';
 
-const config = ConfigManager.config;
 const app = new Koa();
 const server = request(app.listen());
-const cache = new FilesystemCache(config);
+const cache = new DatastoreCache();
 
 app.use(route.get('/compressed', koaCompress()));
 
@@ -37,7 +35,7 @@ app.use(cache.middleware());
 let handlerCalledCount = 0;
 
 test.before(async () => {
-  await cache.clearAllCache();
+  await cache.clearCache();
 });
 
 app.use(
@@ -54,21 +52,25 @@ const promiseTimeout = function (timeout: number) {
 };
 
 test('caches content and serves same content on cache hit', async (t: ExecutionContext) => {
-  const previousCount = handlerCalledCount;
   let res = await server.get('/?basictest');
+  const previousCount = handlerCalledCount;
   t.is(res.status, 200);
-  t.is(res.text, 'Called ' + (previousCount + 1) + ' times');
+  t.is(res.text, 'Called ' + previousCount + ' times');
 
   // Workaround for race condition with writing to datastore.
   await promiseTimeout(2000);
 
   res = await server.get('/?basictest');
   t.is(res.status, 200);
-  t.is(res.text, 'Called ' + (previousCount + 1) + ' times');
+  t.is(res.text, 'Called ' + previousCount + ' times');
   t.truthy(res.header['x-rendertron-cached']);
   t.true(new Date(res.header['x-rendertron-cached']) <= new Date());
 
   res = await server.get('/?basictest');
+  t.is(res.status, 200);
+  t.is(res.text, 'Called ' + previousCount + ' times');
+
+  res = await server.get('/?basictest2');
   t.is(res.status, 200);
   t.is(res.text, 'Called ' + (previousCount + 1) + ' times');
 });
@@ -142,29 +144,6 @@ test('original status is preserved', async (t: ExecutionContext) => {
   t.is(res.status, 401);
 });
 
-test('cache entry can be removed', async (t: ExecutionContext) => {
-  let res = await server.get('/?cacheremovetest');
-  t.is(res.status, 200);
-  t.falsy(res.header['x-rendertron-cached']);
-  t.false(new Date(res.header['x-rendertron-cached']) <= new Date());
-
-  res = await server.get('/?cacheremovetest');
-  t.is(res.status, 200);
-  t.truthy(res.header['x-rendertron-cached']);
-  t.true(new Date(res.header['x-rendertron-cached']) <= new Date());
-  const key = cache.hashCode('/?cacheremovetest');
-  cache.clearCache(key);
-  res = await server.get('/?cacheremovetest');
-  t.is(res.status, 200);
-  t.falsy(res.header['x-rendertron-cached']);
-  t.false(new Date(res.header['x-rendertron-cached']) <= new Date());
-
-  res = await server.get('/?cacheremovetest');
-  t.is(res.status, 200);
-  t.truthy(res.header['x-rendertron-cached']);
-  t.true(new Date(res.header['x-rendertron-cached']) <= new Date());
-});
-
 test('refreshCache refreshes cache', async (t: ExecutionContext) => {
   let content = 'content';
   app.use(
@@ -193,7 +172,7 @@ test('refreshCache refreshes cache', async (t: ExecutionContext) => {
 });
 
 test.serial(
-  'clear all filesystem cache entries',
+  'clear all datastore cache entries',
   async (t: ExecutionContext) => {
     app.use(
       route.get('/clear-all-cache', (ctx: Koa.Context) => {
@@ -204,6 +183,9 @@ test.serial(
     await server.get('/clear-all-cache?cachedResult1');
     await server.get('/clear-all-cache?cachedResult2');
 
+    // Workaround for race condition with writing to datastore.
+    await promiseTimeout(500);
+
     let res = await server.get('/clear-all-cache?cachedResult1');
     t.is(res.status, 200);
     t.truthy(res.header['x-rendertron-cached']);
@@ -213,8 +195,8 @@ test.serial(
     t.truthy(res.header['x-rendertron-cached']);
     t.true(new Date(res.header['x-rendertron-cached']) <= new Date());
 
-    cache.clearAllCache();
-    await promiseTimeout(500);
+    await cache.clearCache();
+
     res = await server.get('/clear-all-cache?cachedResult1');
     t.is(res.status, 200);
     t.falsy(res.header['x-rendertron-cached']);

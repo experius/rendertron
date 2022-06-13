@@ -20,7 +20,7 @@
 'use strict';
 
 import Koa from 'koa';
-import { Config, ConfigManager } from './config';
+import { Config, ConfigManager } from '../config';
 
 type CacheEntry = {
   saved: Date;

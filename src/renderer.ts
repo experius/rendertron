@@ -25,6 +25,8 @@ const MOBILE_USERAGENT =
 export class Renderer {
   private browser: puppeteer.Browser;
   private config: Config;
+  private static magentoTags: {[key: string]: string} = {}
+  // private static redirects: {[key: string]: object} = {}
 
   constructor(browser: puppeteer.Browser, config: Config) {
     this.browser = browser;
@@ -50,6 +52,7 @@ export class Renderer {
     isMobile: boolean,
     timezoneId?: string
   ): Promise<SerializedResponse> {
+
     /**
      * Executed on the page after the page has loaded. Strips script and
      * import tags to prevent further loading of resources.
@@ -148,7 +151,32 @@ export class Renderer {
     // times out, which results in puppeteer throwing an error. This allows us
     // to return a partial response for what was able to be rendered in that
     // time frame.
+
     page.on('response', (r: puppeteer.Response) => {
+      if (r.request().method() == 'GET' ) {
+        if (requestUrl.endsWith('/')) {
+          requestUrl = requestUrl.substring(0, requestUrl.length - 1);
+        }
+
+        if (!Renderer.magentoTags[requestUrl]) {
+          Renderer.magentoTags[requestUrl] = '';
+        }
+
+        if (r.headers()['x-magento-tags']) {
+          console.log("add keys for url: " + requestUrl);
+
+          // TODO fix for multiple pages!!
+          Renderer.magentoTags[requestUrl] += ' ' + r.headers()['x-magento-tags'];
+        }
+
+        if (r.headers().xkey != undefined && r.headers().xkey != '') {
+          console.log("add keys for url: " + requestUrl);
+
+          // TODO fix for multiple pages!!
+          Renderer.magentoTags[requestUrl] += ' ' + r.headers().xkey;
+        }
+      }
+
       if (!response) {
         response = r;
       }
@@ -158,7 +186,7 @@ export class Renderer {
       // Navigate to page. Wait until there are no oustanding network requests.
       response = await page.goto(requestUrl, {
         // default minimum timeout should be 300000 because we have a timeout of 60000 for 5 selectors
-        timeout: this.config.timeout > 300000 ? this.config.timeout : 300000,
+        timeout: this.config.timeout > 10000 ? this.config.timeout : 10000,
         waitUntil: 'domcontentloaded',
       });
       await page.setDefaultTimeout(10000);
@@ -203,6 +231,15 @@ export class Renderer {
 
     } catch (e) {
       console.error(e);
+      if (e.name == 'TimeoutError') {
+        await page.close();
+        if (this.config.closeBrowser) {
+          await this.browser.close();
+        }
+        const timeoutHeaders = new Map();
+        timeoutHeaders.set('Connection', 'close')
+        return { status: 408, customHeaders: timeoutHeaders, content: 'Timeout: The page that should be rendered is to slow!' };
+      }
     }
 
     if (!response) {
@@ -289,6 +326,55 @@ export class Renderer {
         : new Map(),
       content: result,
     };
+  }
+
+  static getMagentoTags(url: string): string
+  {
+    // TODO fix this in a nice way?
+
+    if (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+
+    console.log('Get magentoTags for: ' + url);
+    console.log('Get magentoTags for: ' + url);
+
+    if (Renderer.magentoTags[url]) {
+      // Remove duplicate tags
+      const tags = Renderer.magentoTags[url]
+      const unique = Array.from(new Set(tags.split(' ')));
+
+      console.log('magentoTags: ' + Renderer.magentoTags[url].length);
+      console.log('new magentoTags: ' + unique.join(' ').length);
+
+      return unique.join(' ');
+    }
+
+    console.log('magentoTags: -1');
+
+    return '';
+  }
+
+  static setMagentoTags(magentoTag: string, url: string): void
+  {
+    if (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+
+    if (Renderer.magentoTags[url]) {
+      Renderer.magentoTags[url] = magentoTag;
+    }
+  }
+
+  static unsetMagentoTags(url: string): void
+  {
+    if (url.endsWith('/')) {
+      url = url.substring(0, url.length - 1);
+    }
+
+    if (Renderer.magentoTags[url]) {
+      delete Renderer.magentoTags[url];
+    }
   }
 
   async screenshot(
