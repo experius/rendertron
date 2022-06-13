@@ -29,7 +29,7 @@ app.use(koaStatic(path.resolve(__dirname, '../../test-resources')));
 
 const testBase = 'http://localhost:1234/';
 
-const rendertron = new Rendertron();
+let rendertron = new Rendertron();
 
 let server: request.SuperTest<request.Test>;
 
@@ -71,15 +71,29 @@ test('Renders base page js', async (t: ExecutionContext) => {
   t.is(res.header['content-type'], 'application/json; charset=utf-8');
 });
 
-// TODO why does this timeout..
-// test('Non existing page', async (t: ExecutionContext) => {
-//   const res = await server.get(`/seo-snap/${testBase}non-existing.html`);
+// // TODO why does this timeout..
+test('Non existing page', async (t: ExecutionContext) => {
+  const res = await server.get(`/seo-snap/${testBase}non-existing.html`);
+
+  console.log("test");
+  console.log(res.status);
+  console.log(res.body);
+  console.log(res.error);
+
+  t.is(res.status, 500);
+});
+
+// test.after('Rest startup', async (t: ExecutionContext) => {
+//   console.log("done????");
+//   console.log("done????");
+//   console.log("done????");
+//   console.log("done????");
+//   console.log("done????");
+//   console.log(t);
 //
-//   console.log("test");
-//   console.log(res.status);
-//   console.log(res.body);
-//
-//   t.is(res.status, 500);
+//   rendertron = new Rendertron();
+//   server = request(rendertron.initialize());
+//   await app.listen(1234);
 // });
 //
 // test('Render base page refreshCache no h1 tag', async (t: ExecutionContext) => {
