@@ -299,7 +299,8 @@ export class FilesystemTagsCache {
 
                 Renderer.unsetMagentoTags(url)
             } else if ((ctx.status === 404 || ctx.status === 500) && this.config.healthCheckKey) {
-                let https = require('https');
+                /* eslint @typescript-eslint/no-var-requires: "off" */
+                const https = require('https');
                 https.get('https://hc-ping.com/' + this.config.healthCheckKey + '/fail');
 
             }

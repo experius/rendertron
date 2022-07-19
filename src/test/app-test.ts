@@ -29,7 +29,7 @@ app.use(koaStatic(path.resolve(__dirname, '../../test-resources')));
 
 const testBase = 'http://localhost:1234/';
 
-let rendertron = new Rendertron();
+const rendertron = new Rendertron();
 
 let server: request.SuperTest<request.Test>;
 
