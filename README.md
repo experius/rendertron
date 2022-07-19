@@ -266,6 +266,7 @@ for Puppeteer.
   "restrictedUrlPattern": "((.*(\\.png|\\.jpg|\\.jpeg|\\.gif|\\.webp|\\.mp4)($|\\?))|googleapis\\.com|gstatic\\.com|bat\\.bing\\.com|klarnacdn\\.net|www\\.google\\.com|datatricks\\.com|googletagmanager\\.com)",
   "closeBrowser": false,
   "cache": "filesystem",
+  "healthCheckKey": "<your-healthchecks.io-key>",
   "timeout": 300000,
   "cacheConfig": {
     "cacheDurationMinutes": 10080,

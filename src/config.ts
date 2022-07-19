@@ -26,7 +26,8 @@ import * as os from 'os';
 const CONFIG_PATH = path.resolve(__dirname, '../config.json');
 
 export type Config = {
-  cache: 'datastore' | 'memory' | 'filesystem' | null;
+  cache: 'datastore' | 'memory' | 'filesystem'  | 'filesystem-tags' | null;
+  healthCheckKey: string | null;
   cacheConfig: { [key: string]: string };
   timeout: number;
   port: string;
@@ -49,6 +50,7 @@ export type Config = {
 export class ConfigManager {
   public static config: Config = {
     cache: null,
+    healthCheckKey: null,
     cacheConfig: {
       snapshotDir: path.join(os.tmpdir(), 'rendertron'),
       cacheDurationMinutes: (60 * 24).toString(),

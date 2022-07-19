@@ -286,6 +286,10 @@ export class FilesystemTagsCache {
                 url = url.replace('%3F', '?');
                 url = url.replace('%3D', '=');
 
+                if (ctx.query.mobile) {
+                    url = "_" + url;
+                }
+
                 if (ctx.query.refreshCache) {
                     ctx.body = {
                         html: ctx.body,
@@ -294,6 +298,10 @@ export class FilesystemTagsCache {
                 }
 
                 Renderer.unsetMagentoTags(url)
+            } else if ((ctx.status === 404 || ctx.status === 500) && this.config.healthCheckKey) {
+                let https = require('https');
+                https.get('https://hc-ping.com/' + this.config.healthCheckKey + '/fail');
+
             }
         }.bind(this);
     }

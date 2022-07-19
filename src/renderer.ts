@@ -158,22 +158,25 @@ export class Renderer {
           requestUrl = requestUrl.substring(0, requestUrl.length - 1);
         }
 
-        if (!Renderer.magentoTags[requestUrl]) {
-          Renderer.magentoTags[requestUrl] = '';
+        let saveKey = requestUrl;
+        if (isMobile) {
+          saveKey = "_" + saveKey;
+        }
+
+        if (!Renderer.magentoTags[saveKey]) {
+          Renderer.magentoTags[saveKey] = '';
         }
 
         if (r.headers()['x-magento-tags']) {
-          console.log("add keys for url: " + requestUrl);
+          console.log("add keys for url: " + saveKey);
 
-          // TODO fix for multiple pages!!
-          Renderer.magentoTags[requestUrl] += ' ' + r.headers()['x-magento-tags'];
+          Renderer.magentoTags[saveKey] += ' ' + r.headers()['x-magento-tags'];
         }
 
         if (r.headers().xkey != undefined && r.headers().xkey != '') {
-          console.log("add keys for url: " + requestUrl);
+          console.log("add keys for url: " + saveKey);
 
-          // TODO fix for multiple pages!!
-          Renderer.magentoTags[requestUrl] += ' ' + r.headers().xkey;
+          Renderer.magentoTags[saveKey] += ' ' + r.headers().xkey;
         }
       }
 
